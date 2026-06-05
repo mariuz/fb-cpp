@@ -36,5 +36,6 @@
 #include "EventListener.h"
 #include "ServiceManager.h"
 #include "BackupManager.h"
+#include "DatabaseManager.h"
 
 #endif  // FBCPP_H
