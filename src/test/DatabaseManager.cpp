@@ -177,18 +177,18 @@ BOOST_AUTO_TEST_CASE(databaseSweepAndValidate)
 	DatabaseManager manager{CLIENT, makeServiceManagerOptions()};
 
 	// 1. Run database sweep
-	BOOST_CHECK_NO_THROW(manager.execute(MaintenanceOptions().setDatabase(databasePath).setSweep(true)));
+	BOOST_CHECK_NO_THROW(manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setSweep(true)));
 
 	// 2. Run multi-threaded database sweep
 	BOOST_CHECK_NO_THROW(
-		manager.execute(MaintenanceOptions().setDatabase(databasePath).setSweep(true).setParallelWorkers(4)));
+		manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setSweep(true).setParallelWorkers(4)));
 
 	// 3. Run database validation
 	BOOST_CHECK_NO_THROW(
-		manager.execute(MaintenanceOptions().setDatabase(databasePath).setValidate(true).setFull(true)));
+		manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setValidate(true).setFull(true)));
 
 	// 4. Run database upgrade (minor ODS upgrade)
-	BOOST_CHECK_NO_THROW(manager.execute(MaintenanceOptions().setDatabase(databasePath).setUpgradeDb(true)));
+	BOOST_CHECK_NO_THROW(manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setUpgradeDb(true)));
 
 	Attachment cleanup{CLIENT, databaseUri, attachmentOptions};
 	cleanup.dropDatabase();

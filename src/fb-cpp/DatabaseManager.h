@@ -37,13 +37,14 @@
 namespace fbcpp
 {
 	///
-	/// Represents options used to configure database properties through the service manager.
+	/// Represents options used to configure database properties or run maintenance operations through the service
+	/// manager.
 	///
 	class DatabaseManagerOptions final
 	{
 	public:
 		///
-		/// Returns the database path to be configured.
+		/// Returns the database path to be configured or maintained.
 		///
 		const std::string& getDatabase() const
 		{
@@ -51,7 +52,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets the database path to be configured.
+		/// Sets the database path to be configured or maintained.
 		///
 		DatabaseManagerOptions& setDatabase(const std::string& value)
 		{
@@ -76,34 +77,6 @@ namespace fbcpp
 			return *this;
 		}
 
-	private:
-		std::string database;
-		std::optional<ReplicaMode> replicaMode;
-	};
-
-	///
-	/// Represents options used to run a database maintenance operation through the service manager.
-	///
-	class MaintenanceOptions final
-	{
-	public:
-		///
-		/// Returns the database path to be maintained.
-		///
-		const std::string& getDatabase() const
-		{
-			return database;
-		}
-
-		///
-		/// Sets the database path to be maintained.
-		///
-		MaintenanceOptions& setDatabase(const std::string& value)
-		{
-			database = value;
-			return *this;
-		}
-
 		///
 		/// Returns the verbose output callback.
 		///
@@ -115,7 +88,7 @@ namespace fbcpp
 		///
 		/// Sets the verbose output callback.
 		///
-		MaintenanceOptions& setVerboseOutput(ServiceManager::VerboseOutput value)
+		DatabaseManagerOptions& setVerboseOutput(ServiceManager::VerboseOutput value)
 		{
 			verboseOutput = std::move(value);
 			return *this;
@@ -132,7 +105,7 @@ namespace fbcpp
 		///
 		/// Sets the requested number of parallel workers.
 		///
-		MaintenanceOptions& setParallelWorkers(std::uint32_t value)
+		DatabaseManagerOptions& setParallelWorkers(std::uint32_t value)
 		{
 			parallelWorkers = value;
 			return *this;
@@ -149,7 +122,7 @@ namespace fbcpp
 		///
 		/// Sets whether database sweep is enabled.
 		///
-		MaintenanceOptions& setSweep(bool value)
+		DatabaseManagerOptions& setSweep(bool value)
 		{
 			sweep = value;
 			return *this;
@@ -166,7 +139,7 @@ namespace fbcpp
 		///
 		/// Sets whether database validation is enabled.
 		///
-		MaintenanceOptions& setValidate(bool value)
+		DatabaseManagerOptions& setValidate(bool value)
 		{
 			validate = value;
 			return *this;
@@ -183,7 +156,7 @@ namespace fbcpp
 		///
 		/// Sets whether database mending is enabled.
 		///
-		MaintenanceOptions& setMend(bool value)
+		DatabaseManagerOptions& setMend(bool value)
 		{
 			mend = value;
 			return *this;
@@ -200,7 +173,7 @@ namespace fbcpp
 		///
 		/// Sets whether checksum verification is ignored.
 		///
-		MaintenanceOptions& setIgnoreChecksum(bool value)
+		DatabaseManagerOptions& setIgnoreChecksum(bool value)
 		{
 			ignoreChecksum = value;
 			return *this;
@@ -217,7 +190,7 @@ namespace fbcpp
 		///
 		/// Sets whether killing database shadows is enabled.
 		///
-		MaintenanceOptions& setKillShadows(bool value)
+		DatabaseManagerOptions& setKillShadows(bool value)
 		{
 			killShadows = value;
 			return *this;
@@ -234,7 +207,7 @@ namespace fbcpp
 		///
 		/// Sets whether full validation is enabled.
 		///
-		MaintenanceOptions& setFull(bool value)
+		DatabaseManagerOptions& setFull(bool value)
 		{
 			full = value;
 			return *this;
@@ -251,7 +224,7 @@ namespace fbcpp
 		///
 		/// Sets whether checking only metadata/structure is enabled.
 		///
-		MaintenanceOptions& setCheckDb(bool value)
+		DatabaseManagerOptions& setCheckDb(bool value)
 		{
 			checkDb = value;
 			return *this;
@@ -268,7 +241,7 @@ namespace fbcpp
 		///
 		/// Sets whether recreating ICU indexes is enabled.
 		///
-		MaintenanceOptions& setIcu(bool value)
+		DatabaseManagerOptions& setIcu(bool value)
 		{
 			icu = value;
 			return *this;
@@ -285,7 +258,7 @@ namespace fbcpp
 		///
 		/// Sets whether database upgrade is enabled.
 		///
-		MaintenanceOptions& setUpgradeDb(bool value)
+		DatabaseManagerOptions& setUpgradeDb(bool value)
 		{
 			upgradeDb = value;
 			return *this;
@@ -293,6 +266,7 @@ namespace fbcpp
 
 	private:
 		std::string database;
+		std::optional<ReplicaMode> replicaMode;
 		ServiceManager::VerboseOutput verboseOutput;
 		std::optional<std::uint32_t> parallelWorkers;
 		bool sweep = false;
@@ -316,14 +290,9 @@ namespace fbcpp
 
 	public:
 		///
-		/// Configures database properties using the provided options.
+		/// Configures or maintains database using the provided options.
 		///
 		void execute(const DatabaseManagerOptions& options);
-
-		///
-		/// Runs a maintenance or repair operation using the provided options.
-		///
-		void execute(const MaintenanceOptions& options);
 	};
 }  // namespace fbcpp
 
