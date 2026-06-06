@@ -149,4 +149,49 @@ BOOST_AUTO_TEST_CASE(restoreWithReplicaMode)
 	cleanup.dropDatabase();
 }
 
+BOOST_AUTO_TEST_CASE(databaseSweepAndValidate)
+{
+	const auto databasePath = getTempFile("DatabaseManager-sweepAndValidate.fdb", false);
+	const auto databaseUri = getTempFile("DatabaseManager-sweepAndValidate.fdb");
+	const auto attachmentOptions = AttachmentOptions().setConnectionCharSet("UTF8");
+
+	{  // scope
+		Attachment attachment{
+			CLIENT, databaseUri, AttachmentOptions().setCreateDatabase(true).setConnectionCharSet("UTF8")};
+		Transaction transaction{attachment};
+
+		Statement createTable{attachment, transaction, "create table test (id integer)"};
+		BOOST_REQUIRE(createTable.execute(transaction));
+		transaction.commit();
+	}
+
+	{  // scope
+		Attachment attachment{CLIENT, databaseUri, attachmentOptions};
+		Transaction transaction{attachment};
+
+		Statement insertData{attachment, transaction, "insert into test (id) values (1)"};
+		BOOST_REQUIRE(insertData.execute(transaction));
+		transaction.commit();
+	}
+
+	DatabaseManager manager{CLIENT, makeServiceManagerOptions()};
+
+	// 1. Run database sweep
+	BOOST_CHECK_NO_THROW(manager.execute(MaintenanceOptions().setDatabase(databasePath).setSweep(true)));
+
+	// 2. Run multi-threaded database sweep
+	BOOST_CHECK_NO_THROW(
+		manager.execute(MaintenanceOptions().setDatabase(databasePath).setSweep(true).setParallelWorkers(4)));
+
+	// 3. Run database validation
+	BOOST_CHECK_NO_THROW(
+		manager.execute(MaintenanceOptions().setDatabase(databasePath).setValidate(true).setFull(true)));
+
+	// 4. Run database upgrade (minor ODS upgrade)
+	BOOST_CHECK_NO_THROW(manager.execute(MaintenanceOptions().setDatabase(databasePath).setUpgradeDb(true)));
+
+	Attachment cleanup{CLIENT, databaseUri, attachmentOptions};
+	cleanup.dropDatabase();
+}
+
 BOOST_AUTO_TEST_SUITE_END()
