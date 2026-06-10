@@ -35,77 +35,76 @@ void DatabaseManager::execute(const DatabaseManagerOptions& options)
 	StatusWrapper statusWrapper{getClient()};
 	auto builder =
 		fbUnique(getClient().getUtil()->getXpbBuilder(&statusWrapper, fb::IXpbBuilder::SPB_START, nullptr, 0));
-
-	const bool isRepair = options.getSweep() || options.getValidate() || options.getMend() ||
-		options.getIgnoreChecksum() || options.getKillShadows() || options.getFull() || options.getCheckDb() ||
-		options.getIcu() || options.getUpgradeDb() || options.getParallelWorkers().has_value();
-
-	if (isRepair)
-		builder->insertTag(&statusWrapper, isc_action_svc_repair);
-	else
-		builder->insertTag(&statusWrapper, isc_action_svc_properties);
-
+	builder->insertTag(&statusWrapper, isc_action_svc_properties);
 	builder->insertString(&statusWrapper, isc_spb_dbname, options.getDatabase().c_str());
 
-	if (isRepair)
+	if (const auto replicaMode = options.getReplicaMode())
 	{
-		int optionsVal = 0;
-		if (options.getSweep())
-			optionsVal |= isc_spb_rpr_sweep_db;
-		if (options.getValidate())
-			optionsVal |= isc_spb_rpr_validate_db;
-		if (options.getMend())
-			optionsVal |= isc_spb_rpr_mend_db;
-		if (options.getIgnoreChecksum())
-			optionsVal |= isc_spb_rpr_ignore_checksum;
-		if (options.getKillShadows())
-			optionsVal |= isc_spb_rpr_kill_shadows;
-		if (options.getFull())
-			optionsVal |= isc_spb_rpr_full;
-		if (options.getCheckDb())
-			optionsVal |= isc_spb_rpr_check_db;
-		if (options.getIcu())
-			optionsVal |= isc_spb_rpr_icu;
-		if (options.getUpgradeDb())
-			optionsVal |= isc_spb_rpr_upgrade_db;
-
-		if (optionsVal != 0)
-			builder->insertInt(&statusWrapper, isc_spb_options, optionsVal);
-
-		if (const auto parallelWorkers = options.getParallelWorkers())
-			builder->insertInt(&statusWrapper, isc_spb_rpr_par_workers, static_cast<int>(*parallelWorkers));
-	}
-	else
-	{
-		if (const auto replicaMode = options.getReplicaMode())
+		std::uint8_t modeVal = 0;
+		switch (*replicaMode)
 		{
-			std::uint8_t modeVal = 0;
-			switch (*replicaMode)
-			{
-				case ReplicaMode::NONE:
-					modeVal = isc_spb_prp_rm_none;
-					break;
-				case ReplicaMode::READ_ONLY:
-					modeVal = isc_spb_prp_rm_readonly;
-					break;
-				case ReplicaMode::READ_WRITE:
-					modeVal = isc_spb_prp_rm_readwrite;
-					break;
-				default:
-					assert(false);
-					break;
-			}
-			builder->insertBytes(&statusWrapper, isc_spb_prp_replica_mode, &modeVal, 1u);
+			case ReplicaMode::NONE:
+				modeVal = isc_spb_prp_rm_none;
+				break;
+			case ReplicaMode::READ_ONLY:
+				modeVal = isc_spb_prp_rm_readonly;
+				break;
+			case ReplicaMode::READ_WRITE:
+				modeVal = isc_spb_prp_rm_readwrite;
+				break;
+			default:
+				assert(false);
+				break;
 		}
+		builder->insertBytes(&statusWrapper, isc_spb_prp_replica_mode, &modeVal, 1u);
 	}
 
 	const auto buffer = builder->getBuffer(&statusWrapper);
 	const auto length = builder->getBufferLength(&statusWrapper);
 
 	startAction(std::vector<std::uint8_t>(buffer, buffer + length));
+	waitForCompletion();
+}
 
-	if (isRepair)
-		waitForCompletion(options.getVerboseOutput());
-	else
-		waitForCompletion();
+
+void DatabaseManager::execute(const MaintenanceOptions& options)
+{
+	StatusWrapper statusWrapper{getClient()};
+	auto builder =
+		fbUnique(getClient().getUtil()->getXpbBuilder(&statusWrapper, fb::IXpbBuilder::SPB_START, nullptr, 0));
+
+	builder->insertTag(&statusWrapper, isc_action_svc_repair);
+	builder->insertString(&statusWrapper, isc_spb_dbname, options.getDatabase().c_str());
+
+	int optionsVal = 0;
+	if (options.getSweep())
+		optionsVal |= isc_spb_rpr_sweep_db;
+	if (options.getValidate())
+		optionsVal |= isc_spb_rpr_validate_db;
+	if (options.getMend())
+		optionsVal |= isc_spb_rpr_mend_db;
+	if (options.getIgnoreChecksum())
+		optionsVal |= isc_spb_rpr_ignore_checksum;
+	if (options.getKillShadows())
+		optionsVal |= isc_spb_rpr_kill_shadows;
+	if (options.getFull())
+		optionsVal |= isc_spb_rpr_full;
+	if (options.getCheckDb())
+		optionsVal |= isc_spb_rpr_check_db;
+	if (options.getIcu())
+		optionsVal |= isc_spb_rpr_icu;
+	if (options.getUpgradeDb())
+		optionsVal |= isc_spb_rpr_upgrade_db;
+
+	if (optionsVal != 0)
+		builder->insertInt(&statusWrapper, isc_spb_options, optionsVal);
+
+	if (const auto parallelWorkers = options.getParallelWorkers())
+		builder->insertInt(&statusWrapper, isc_spb_rpr_par_workers, static_cast<int>(*parallelWorkers));
+
+	const auto buffer = builder->getBuffer(&statusWrapper);
+	const auto length = builder->getBufferLength(&statusWrapper);
+
+	startAction(std::vector<std::uint8_t>(buffer, buffer + length));
+	waitForCompletion(options.getVerboseOutput());
 }
