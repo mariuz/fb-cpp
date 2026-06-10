@@ -318,7 +318,7 @@ namespace fbcpp
 		///
 		/// Configures database properties using the provided options.
 		///
-		void execute(const DatabasePropertiesOptions& options);
+		void setProperties(const DatabasePropertiesOptions& options);
 
 		///
 		/// Runs a repair operation using the provided options.

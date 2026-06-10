@@ -30,7 +30,7 @@ using namespace fbcpp;
 using namespace fbcpp::impl;
 
 
-void DatabaseManager::execute(const DatabasePropertiesOptions& options)
+void DatabaseManager::setProperties(const DatabasePropertiesOptions& options)
 {
 	StatusWrapper statusWrapper{getClient()};
 	auto builder =
