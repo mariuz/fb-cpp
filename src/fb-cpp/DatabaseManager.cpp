@@ -67,7 +67,7 @@ void DatabaseManager::execute(const DatabaseManagerOptions& options)
 }
 
 
-void DatabaseManager::execute(const DatabaseRepairOptions& options)
+void DatabaseManager::repair(const DatabaseRepairOptions& options)
 {
 	StatusWrapper statusWrapper{getClient()};
 	auto builder =

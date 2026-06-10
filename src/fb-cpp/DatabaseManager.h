@@ -321,9 +321,9 @@ namespace fbcpp
 		void execute(const DatabaseManagerOptions& options);
 
 		///
-		/// Runs a maintenance or repair operation using the provided options.
+		/// Runs a repair operation using the provided options.
 		///
-		void execute(const DatabaseRepairOptions& options);
+		void repair(const DatabaseRepairOptions& options);
 	};
 }  // namespace fbcpp
 
