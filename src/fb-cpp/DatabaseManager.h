@@ -84,7 +84,7 @@ namespace fbcpp
 	///
 	/// Represents options used to run a database maintenance operation through the service manager.
 	///
-	class MaintenanceOptions final
+	class DatabaseRepairOptions final
 	{
 	public:
 		///
@@ -98,7 +98,7 @@ namespace fbcpp
 		///
 		/// Sets the database path to be maintained.
 		///
-		MaintenanceOptions& setDatabase(const std::string& value)
+		DatabaseRepairOptions& setDatabase(const std::string& value)
 		{
 			database = value;
 			return *this;
@@ -115,7 +115,7 @@ namespace fbcpp
 		///
 		/// Sets the verbose output callback.
 		///
-		MaintenanceOptions& setVerboseOutput(ServiceManager::VerboseOutput value)
+		DatabaseRepairOptions& setVerboseOutput(ServiceManager::VerboseOutput value)
 		{
 			verboseOutput = std::move(value);
 			return *this;
@@ -132,7 +132,7 @@ namespace fbcpp
 		///
 		/// Sets the requested number of parallel workers.
 		///
-		MaintenanceOptions& setParallelWorkers(std::uint32_t value)
+		DatabaseRepairOptions& setParallelWorkers(std::uint32_t value)
 		{
 			parallelWorkers = value;
 			return *this;
@@ -149,7 +149,7 @@ namespace fbcpp
 		///
 		/// Sets whether database sweep is enabled.
 		///
-		MaintenanceOptions& setSweep(bool value)
+		DatabaseRepairOptions& setSweep(bool value)
 		{
 			sweep = value;
 			return *this;
@@ -166,7 +166,7 @@ namespace fbcpp
 		///
 		/// Sets whether database validation is enabled.
 		///
-		MaintenanceOptions& setValidate(bool value)
+		DatabaseRepairOptions& setValidate(bool value)
 		{
 			validate = value;
 			return *this;
@@ -183,7 +183,7 @@ namespace fbcpp
 		///
 		/// Sets whether database mending is enabled.
 		///
-		MaintenanceOptions& setMend(bool value)
+		DatabaseRepairOptions& setMend(bool value)
 		{
 			mend = value;
 			return *this;
@@ -200,7 +200,7 @@ namespace fbcpp
 		///
 		/// Sets whether checksum verification is ignored.
 		///
-		MaintenanceOptions& setIgnoreChecksum(bool value)
+		DatabaseRepairOptions& setIgnoreChecksum(bool value)
 		{
 			ignoreChecksum = value;
 			return *this;
@@ -217,7 +217,7 @@ namespace fbcpp
 		///
 		/// Sets whether killing database shadows is enabled.
 		///
-		MaintenanceOptions& setKillShadows(bool value)
+		DatabaseRepairOptions& setKillShadows(bool value)
 		{
 			killShadows = value;
 			return *this;
@@ -234,7 +234,7 @@ namespace fbcpp
 		///
 		/// Sets whether full validation is enabled.
 		///
-		MaintenanceOptions& setFull(bool value)
+		DatabaseRepairOptions& setFull(bool value)
 		{
 			full = value;
 			return *this;
@@ -251,7 +251,7 @@ namespace fbcpp
 		///
 		/// Sets whether checking only metadata/structure is enabled.
 		///
-		MaintenanceOptions& setCheckDb(bool value)
+		DatabaseRepairOptions& setCheckDb(bool value)
 		{
 			checkDb = value;
 			return *this;
@@ -268,7 +268,7 @@ namespace fbcpp
 		///
 		/// Sets whether recreating ICU indexes is enabled.
 		///
-		MaintenanceOptions& setIcu(bool value)
+		DatabaseRepairOptions& setIcu(bool value)
 		{
 			icu = value;
 			return *this;
@@ -285,7 +285,7 @@ namespace fbcpp
 		///
 		/// Sets whether database upgrade is enabled.
 		///
-		MaintenanceOptions& setUpgradeDb(bool value)
+		DatabaseRepairOptions& setUpgradeDb(bool value)
 		{
 			upgradeDb = value;
 			return *this;
@@ -323,7 +323,7 @@ namespace fbcpp
 		///
 		/// Runs a maintenance or repair operation using the provided options.
 		///
-		void execute(const MaintenanceOptions& options);
+		void execute(const DatabaseRepairOptions& options);
 	};
 }  // namespace fbcpp
 
