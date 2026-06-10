@@ -139,7 +139,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether database sweep is enabled.
+		/// Returns whether database sweep is configured to be run.
 		///
 		bool getSweep() const
 		{
@@ -147,7 +147,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether database sweep is enabled.
+		/// Sets whether database sweep should be run.
 		///
 		DatabaseRepairOptions& setSweep(bool value)
 		{
@@ -156,7 +156,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether database validation is enabled.
+		/// Returns whether database validation is configured to be run.
 		///
 		bool getValidate() const
 		{
@@ -164,7 +164,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether database validation is enabled.
+		/// Sets whether database validation should be run.
 		///
 		DatabaseRepairOptions& setValidate(bool value)
 		{
@@ -173,7 +173,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether database mending is enabled.
+		/// Returns whether database mending is configured to be run.
 		///
 		bool getMend() const
 		{
@@ -181,7 +181,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether database mending is enabled.
+		/// Sets whether database mending should be run.
 		///
 		DatabaseRepairOptions& setMend(bool value)
 		{
@@ -190,7 +190,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether checksum verification is ignored.
+		/// Returns whether checksum verification is configured to be ignored.
 		///
 		bool getIgnoreChecksum() const
 		{
@@ -198,7 +198,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether checksum verification is ignored.
+		/// Sets whether checksum verification should be ignored.
 		///
 		DatabaseRepairOptions& setIgnoreChecksum(bool value)
 		{
@@ -207,7 +207,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether killing database shadows is enabled.
+		/// Returns whether killing database shadows is configured to be run.
 		///
 		bool getKillShadows() const
 		{
@@ -215,7 +215,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether killing database shadows is enabled.
+		/// Sets whether killing database shadows should be run.
 		///
 		DatabaseRepairOptions& setKillShadows(bool value)
 		{
@@ -224,7 +224,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether full validation is enabled.
+		/// Returns whether full validation is configured to be run.
 		///
 		bool getFull() const
 		{
@@ -232,7 +232,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether full validation is enabled.
+		/// Sets whether full validation should be run.
 		///
 		DatabaseRepairOptions& setFull(bool value)
 		{
@@ -241,7 +241,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether checking only metadata/structure is enabled.
+		/// Returns whether checking only metadata/structure is configured to be run.
 		///
 		bool getCheckDb() const
 		{
@@ -249,7 +249,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether checking only metadata/structure is enabled.
+		/// Sets whether checking only metadata/structure should be run.
 		///
 		DatabaseRepairOptions& setCheckDb(bool value)
 		{
@@ -258,7 +258,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether recreating ICU indexes is enabled.
+		/// Returns whether recreating ICU indexes is configured to be run.
 		///
 		bool getIcu() const
 		{
@@ -266,7 +266,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether recreating ICU indexes is enabled.
+		/// Sets whether recreating ICU indexes should be run.
 		///
 		DatabaseRepairOptions& setIcu(bool value)
 		{
@@ -275,7 +275,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Returns whether database upgrade is enabled.
+		/// Returns whether database upgrade is configured to be run.
 		///
 		bool getUpgradeDb() const
 		{
@@ -283,7 +283,7 @@ namespace fbcpp
 		}
 
 		///
-		/// Sets whether database upgrade is enabled.
+		/// Sets whether database upgrade should be run.
 		///
 		DatabaseRepairOptions& setUpgradeDb(bool value)
 		{
