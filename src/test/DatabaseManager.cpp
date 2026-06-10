@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(setReplicaModeNone)
 	}
 
 	DatabaseManager manager{CLIENT, makeServiceManagerOptions()};
-	manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setReplicaMode(ReplicaMode::READ_ONLY));
+	manager.setProperties(DatabasePropertiesOptions().setDatabase(databasePath).setReplicaMode(ReplicaMode::READ_ONLY));
 
 	{  // scope
 		Attachment attachment{CLIENT, databaseUri, attachmentOptions};
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(setReplicaModeNone)
 		BOOST_CHECK_EQUAL(queryMon.getInt32(0).value(), 1);
 	}
 
-	manager.execute(DatabaseManagerOptions().setDatabase(databasePath).setReplicaMode(ReplicaMode::NONE));
+	manager.setProperties(DatabasePropertiesOptions().setDatabase(databasePath).setReplicaMode(ReplicaMode::NONE));
 
 	{  // scope
 		Attachment attachment{CLIENT, databaseUri, attachmentOptions};
@@ -146,6 +146,51 @@ BOOST_AUTO_TEST_CASE(restoreWithReplicaMode)
 	}
 
 	Attachment cleanup{CLIENT, sourceDatabaseUri, attachmentOptions};
+	cleanup.dropDatabase();
+}
+
+BOOST_AUTO_TEST_CASE(databaseSweepAndValidate)
+{
+	const auto databasePath = getTempFile("DatabaseManager-sweepAndValidate.fdb", false);
+	const auto databaseUri = getTempFile("DatabaseManager-sweepAndValidate.fdb");
+	const auto attachmentOptions = AttachmentOptions().setConnectionCharSet("UTF8");
+
+	{  // scope
+		Attachment attachment{
+			CLIENT, databaseUri, AttachmentOptions().setCreateDatabase(true).setConnectionCharSet("UTF8")};
+		Transaction transaction{attachment};
+
+		Statement createTable{attachment, transaction, "create table test (id integer)"};
+		BOOST_REQUIRE(createTable.execute(transaction));
+		transaction.commit();
+	}
+
+	{  // scope
+		Attachment attachment{CLIENT, databaseUri, attachmentOptions};
+		Transaction transaction{attachment};
+
+		Statement insertData{attachment, transaction, "insert into test (id) values (1)"};
+		BOOST_REQUIRE(insertData.execute(transaction));
+		transaction.commit();
+	}
+
+	DatabaseManager manager{CLIENT, makeServiceManagerOptions()};
+
+	// 1. Run database sweep
+	BOOST_CHECK_NO_THROW(manager.repair(DatabaseRepairOptions().setDatabase(databasePath).setSweep(true)));
+
+	// 2. Run multi-threaded database sweep
+	BOOST_CHECK_NO_THROW(
+		manager.repair(DatabaseRepairOptions().setDatabase(databasePath).setSweep(true).setParallelWorkers(4)));
+
+	// 3. Run database validation
+	BOOST_CHECK_NO_THROW(
+		manager.repair(DatabaseRepairOptions().setDatabase(databasePath).setValidate(true).setFull(true)));
+
+	// 4. Run database upgrade (minor ODS upgrade)
+	BOOST_CHECK_NO_THROW(manager.repair(DatabaseRepairOptions().setDatabase(databasePath).setUpgradeDb(true)));
+
+	Attachment cleanup{CLIENT, databaseUri, attachmentOptions};
 	cleanup.dropDatabase();
 }
 
