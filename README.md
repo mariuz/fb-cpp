@@ -108,7 +108,8 @@ The default features are:
 This project uses CMake presets (`CMakePresets.json`) and vcpkg for dependency management.
 
 Copy the appropriate `CMakeUserPresets.json.<platform>.template` file to `CMakeUserPresets.json` to set environment
-variables for tests and define the default preset.
+variables for tests and define the default preset. On Windows, use either `CMakeUserPresets.json.windows-vs2022.template`
+or `CMakeUserPresets.json.windows-vs2026.template`.
 
 ```bash
 # Configure

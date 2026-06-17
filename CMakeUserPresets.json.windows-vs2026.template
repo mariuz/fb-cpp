@@ -4,7 +4,7 @@
     {
       "name": "default",
       "inherits": [
-        "windows-vs2022"
+        "windows-vs2026"
       ]
     }
   ],
@@ -12,7 +12,7 @@
     {
       "name": "default",
       "inherits": [
-        "windows-vs2022-debug"
+        "windows-vs2026-debug"
       ]
     }
   ],
@@ -20,12 +20,12 @@
     {
       "name": "default",
       "inherits": [
-        "windows-vs2022-debug"
+        "windows-vs2026-debug"
       ],
       "environment": {
         "FBCPP_TEST_SERVER": "localhost",
-		"ISC_USER": "sysdba",
-		"ISC_PASSWORD": "masterkey"
+        "ISC_USER": "sysdba",
+        "ISC_PASSWORD": "masterkey"
       }
     }
   ]

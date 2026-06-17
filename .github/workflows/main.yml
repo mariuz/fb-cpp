@@ -205,7 +205,7 @@ jobs:
       - name: Configure CMake
         shell: cmd
         run: |
-          copy CMakeUserPresets.json.windows.template CMakeUserPresets.json
+          copy CMakeUserPresets.json.windows-vs2026.template CMakeUserPresets.json
           cmake --preset default
 
       - name: Upload vcpkg failure logs

@@ -196,7 +196,7 @@ jobs:
       - name: Configure CMake
         shell: cmd
         run: |
-          copy CMakeUserPresets.json.windows.template CMakeUserPresets.json
+          copy CMakeUserPresets.json.windows-vs2026.template CMakeUserPresets.json
           cmake --preset default
 
       - name: Upload vcpkg failure logs
@@ -215,8 +215,6 @@ jobs:
       - name: Run tests
         shell: cmd
         run: |
-          set ISC_USER=sysdba
-          set ISC_PASSWORD=masterkey
           ctest --preset default --output-on-failure -j8
 
   build-macos:
