@@ -26,13 +26,16 @@
 #define FBCPP_ATTACHMENT_H
 
 #include "fb-api.h"
+#include "RowSet.h"
 #include "SmartPtrs.h"
+#include "StatementOptions.h"
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
-#include <cstddef>
 
 
 ///
@@ -41,6 +44,8 @@
 namespace fbcpp
 {
 	class Client;
+	class Statement;
+	class Transaction;
 
 	///
 	/// Represents options used when creating an Attachment object.
@@ -301,14 +306,204 @@ namespace fbcpp
 		///
 		void dropDatabase();
 
+		///
+		/// Prepares and executes an SQL statement using the supplied transaction.
+		///
+		bool execute(Transaction& transaction, std::string_view sql, const StatementOptions& options = {});
+
+		///
+		/// Prepares, binds parameters, and executes an SQL statement using the supplied transaction.
+		///
+		template <typename Params>
+		bool execute(Transaction& transaction, std::string_view sql, const Params& params);
+
+		///
+		/// Prepares, binds parameters, and executes an SQL statement using the supplied transaction and statement
+		/// options.
+		///
+		template <typename Params>
+		bool execute(
+			Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params);
+
+		///
+		/// Prepares and executes a query using the supplied transaction and returns up to maxRows rows.
+		///
+		RowSet queryRowSet(
+			Transaction& transaction, std::string_view sql, unsigned maxRows, const StatementOptions& options = {});
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and returns up to maxRows
+		/// rows.
+		///
+		template <typename Params>
+		RowSet queryRowSet(Transaction& transaction, std::string_view sql, unsigned maxRows, const Params& params);
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and statement options and
+		/// returns up to maxRows rows.
+		///
+		template <typename Params>
+		RowSet queryRowSet(Transaction& transaction, std::string_view sql, unsigned maxRows,
+			const StatementOptions& options, const Params& params);
+
+		///
+		/// Prepares and executes a query using the supplied transaction and returns the first column of the first row.
+		///
+		template <typename T>
+		std::optional<T> queryScalar(
+			Transaction& transaction, std::string_view sql, const StatementOptions& options = {});
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and returns the first column
+		/// of the first row.
+		///
+		template <typename T, typename Params>
+		std::optional<T> queryScalar(Transaction& transaction, std::string_view sql, const Params& params);
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and statement options and
+		/// returns the first column of the first row.
+		///
+		template <typename T, typename Params>
+		std::optional<T> queryScalar(
+			Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params);
+
+		///
+		/// Prepares and executes a query using the supplied transaction and returns the first row mapped as T.
+		///
+		template <typename T>
+		std::optional<T> queryFirstRowAs(
+			Transaction& transaction, std::string_view sql, const StatementOptions& options = {});
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and returns the first row
+		/// mapped as T.
+		///
+		template <typename T, typename Params>
+		std::optional<T> queryFirstRowAs(Transaction& transaction, std::string_view sql, const Params& params);
+
+		///
+		/// Prepares, binds parameters, and executes a query using the supplied transaction and statement options and
+		/// returns the first row mapped as T.
+		///
+		template <typename T, typename Params>
+		std::optional<T> queryFirstRowAs(
+			Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params);
+
 	private:
 		void disconnectOrDrop(bool drop);
+		RowSet queryPreparedRowSet(Statement& statement, Transaction& transaction, unsigned maxRows);
 
 	private:
 		Client* client;
 		FbRef<fb::IAttachment> handle;
 	};
+
+	template <typename T>
+	std::optional<T> Attachment::queryScalar(
+		Transaction& transaction, std::string_view sql, const StatementOptions& options)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, options);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).get<std::optional<T>>(0);
+	}
+
+	template <typename T>
+	std::optional<T> Attachment::queryFirstRowAs(
+		Transaction& transaction, std::string_view sql, const StatementOptions& options)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, options);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).get<T>();
+	}
 }  // namespace fbcpp
 
+#include "Statement.h"
+
+namespace fbcpp
+{
+	template <typename Params>
+	bool Attachment::execute(Transaction& transaction, std::string_view sql, const Params& params)
+	{
+		return execute(transaction, sql, StatementOptions{}, params);
+	}
+
+	template <typename Params>
+	bool Attachment::execute(
+		Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params)
+	{
+		Statement statement{*this, transaction, sql, options};
+		statement.set(params);
+		return statement.execute(transaction);
+	}
+
+	template <typename Params>
+	RowSet Attachment::queryRowSet(
+		Transaction& transaction, std::string_view sql, unsigned maxRows, const Params& params)
+	{
+		return queryRowSet(transaction, sql, maxRows, StatementOptions{}, params);
+	}
+
+	template <typename Params>
+	RowSet Attachment::queryRowSet(Transaction& transaction, std::string_view sql, unsigned maxRows,
+		const StatementOptions& options, const Params& params)
+	{
+		Statement statement{*this, transaction, sql, options};
+		statement.set(params);
+		return queryPreparedRowSet(statement, transaction, maxRows);
+	}
+
+	template <typename T, typename Params>
+	std::optional<T> Attachment::queryScalar(Transaction& transaction, std::string_view sql, const Params& params)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, params);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).template get<std::optional<T>>(0);
+	}
+
+	template <typename T, typename Params>
+	std::optional<T> Attachment::queryScalar(
+		Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, options, params);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).template get<std::optional<T>>(0);
+	}
+
+	template <typename T, typename Params>
+	std::optional<T> Attachment::queryFirstRowAs(Transaction& transaction, std::string_view sql, const Params& params)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, params);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).template get<T>();
+	}
+
+	template <typename T, typename Params>
+	std::optional<T> Attachment::queryFirstRowAs(
+		Transaction& transaction, std::string_view sql, const StatementOptions& options, const Params& params)
+	{
+		auto rowSet = queryRowSet(transaction, sql, 1u, options, params);
+
+		if (rowSet.getCount() == 0u)
+			return std::nullopt;
+
+		return rowSet.getRow(0).template get<T>();
+	}
+}  // namespace fbcpp
 
 #endif  // FBCPP_ATTACHMENT_H

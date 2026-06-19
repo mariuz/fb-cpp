@@ -25,6 +25,9 @@
 #include "Attachment.h"
 #include "Client.h"
 #include "Exception.h"
+#include "RowSet.h"
+#include "Statement.h"
+#include "Transaction.h"
 
 using namespace fbcpp;
 using namespace fbcpp::impl;
@@ -92,4 +95,40 @@ void Attachment::disconnect()
 void Attachment::dropDatabase()
 {
 	disconnectOrDrop(true);
+}
+
+bool Attachment::execute(Transaction& transaction, std::string_view sql, const StatementOptions& options)
+{
+	Statement statement{*this, transaction, sql, options};
+	return statement.execute(transaction);
+}
+
+RowSet Attachment::queryRowSet(
+	Transaction& transaction, std::string_view sql, unsigned maxRows, const StatementOptions& options)
+{
+	Statement statement{*this, transaction, sql, options};
+	return queryPreparedRowSet(statement, transaction, maxRows);
+}
+
+RowSet Attachment::queryPreparedRowSet(Statement& statement, Transaction& transaction, unsigned maxRows)
+{
+	switch (statement.getType())
+	{
+		case StatementType::SELECT:
+		case StatementType::SELECT_FOR_UPDATE:
+			break;
+
+		case StatementType::EXEC_PROCEDURE:
+			if (!statement.getOutputDescriptors().empty())
+				break;
+
+			throw FbCppException("Cannot use procedure without output columns with Attachment::queryRowSet");
+
+		default:
+			throw FbCppException("Cannot use non-query SQL with Attachment::queryRowSet");
+	}
+
+	const auto hasRow = statement.execute(transaction);
+	const auto effectiveMaxRows = statement.getType() == StatementType::EXEC_PROCEDURE ? 1u : maxRows;
+	return RowSet{statement, hasRow ? effectiveMaxRows : 0u, hasRow};
 }
