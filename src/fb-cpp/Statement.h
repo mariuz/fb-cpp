@@ -309,9 +309,15 @@ namespace fbcpp
 
 		///
 		/// @brief Executes a prepared statement using the supplied transaction.
+		///
+		/// For a SELECT, this opens the cursor and already fetches the first row - a subsequent
+		/// `fetchNext()` positions on the second row. Cast to `void` to deliberately discard the
+		/// result (e.g. for DDL/DML, or when a row is known to exist).
+		///
 		/// @param transaction Transaction that will own the execution context.
 		/// @return `true` when execution yields a record.
 		///
+		[[nodiscard("execute() already fetches a SELECT's first row; looping on fetchNext() alone skips it")]]
 		bool execute(Transaction& transaction);
 
 		///
@@ -320,32 +326,44 @@ namespace fbcpp
 
 		///
 		/// @brief Fetches the next row in the current result set.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor may be past the end")]]
 		bool fetchNext();
 
 		///
 		/// @brief Fetches the previous row in the current result set.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor may be before the start")]]
 		bool fetchPrior();
 
 		///
 		/// @brief Positions the cursor on the first row.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor position is unknown")]]
 		bool fetchFirst();
 
 		///
 		/// @brief Positions the cursor on the last row.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor position is unknown")]]
 		bool fetchLast();
 
 		///
 		/// @brief Positions the cursor on the given absolute row number.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor position is unknown")]]
 		bool fetchAbsolute(unsigned position);
 
 		///
 		/// @brief Moves the cursor by the requested relative offset.
+		/// @return `true` when a row was fetched.
 		///
+		[[nodiscard("without checking the result, the cursor position is unknown")]]
 		bool fetchRelative(int offset);
 
 		///

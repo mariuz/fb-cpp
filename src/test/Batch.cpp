@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(constructorFromStatementAndExecute)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null, name varchar(50))"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(constructorFromAttachmentAndExecute)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null, val integer)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(moveConstructorTransfersOwnership)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(executeReportsNoInfoWhenRecordCountsDisabled)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(executeWithBadDataReportsExecuteFailed)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null primary key)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -312,7 +312,7 @@ BOOST_AUTO_TEST_CASE(cancelDiscardsMessages)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE(blobWithIdEngine)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null, data blob)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE(registerExistingBlob)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null, data blob)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 
@@ -473,7 +473,7 @@ BOOST_AUTO_TEST_CASE(closeReleasesHandle)
 	{  // scope
 		Transaction transaction{attachment};
 		Statement ddl{attachment, transaction, "recreate table batch_test (id integer not null)"};
-		ddl.execute(transaction);
+		(void) ddl.execute(transaction);
 		transaction.commit();
 	}
 

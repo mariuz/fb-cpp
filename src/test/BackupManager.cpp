@@ -169,11 +169,11 @@ BOOST_DATA_TEST_CASE(backupAndRestoreRoundTrip, data::make(BACKUP_RESTORE_VERBOS
 
 		Statement create{
 			attachment, transaction, "create table test(id integer not null primary key, name varchar(20))"};
-		create.execute(transaction);
+		(void) create.execute(transaction);
 		transaction.commitRetaining();
 
 		Statement insert{attachment, transaction, "insert into test(id, name) values (1, 'backup')"};
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 		transaction.commit();
 	}
 
@@ -225,11 +225,11 @@ BOOST_AUTO_TEST_CASE(restoreReplace)
 		Transaction transaction{attachment};
 
 		Statement create{attachment, transaction, "create table test(id integer not null primary key)"};
-		create.execute(transaction);
+		(void) create.execute(transaction);
 		transaction.commitRetaining();
 
 		Statement insert{attachment, transaction, "insert into test(id) values (7)"};
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 		transaction.commit();
 	}
 
@@ -270,12 +270,12 @@ BOOST_AUTO_TEST_CASE(multiFileDatabaseAndBackupRoundTrip)
 
 		Statement create{
 			attachment, transaction, "create table test(id integer not null primary key, name varchar(50))"};
-		create.execute(transaction);
+		(void) create.execute(transaction);
 		transaction.commitRetaining();
 
 		Statement addFile{
 			attachment, transaction, "alter database add file '" + sourceSecondaryPath + "' starting at page 241"};
-		addFile.execute(transaction);
+		(void) addFile.execute(transaction);
 		transaction.commitRetaining();
 
 		for (int i = 1; i <= 200; ++i)
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(multiFileDatabaseAndBackupRoundTrip)
 			Statement insert{attachment, transaction, "insert into test(id, name) values (?, ?)"};
 			insert.setInt32(0, i);
 			insert.setString(1, "row-" + std::to_string(i) + std::string(40, 'x'));
-			insert.execute(transaction);
+			(void) insert.execute(transaction);
 		}
 		transaction.commitRetaining();
 

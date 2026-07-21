@@ -77,6 +77,12 @@ if (statement.execute(transaction))
 transaction.commit();
 ```
 
+Note that `execute()` already fetches a SELECT's first row — that is why the loop above is
+`if (execute()) do ... while (fetchNext());` and not `execute(); while (fetchNext()) ...`,
+which would silently skip the first row. `execute()` is marked `[[nodiscard]]` so the
+compiler warns about the latter shape; cast to `void` to deliberately discard the result
+(e.g. for DDL/DML, or when a row is known to exist).
+
 ## Using with vcpkg
 
 This library is present in [firebird-vcpkg-registry](https://github.com/asfernandes/firebird-vcpkg-registry).

@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(getTypeReturnsCorrectStatementType)
 	Statement ddlStmt{attachment, transaction, "create table t (col integer)"};
 	BOOST_CHECK(ddlStmt.getType() == StatementType::DDL);
 
-	ddlStmt.execute(transaction);
+	(void) ddlStmt.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement selectStmt{attachment, transaction, "select col from t"};
@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(descriptorMetadataFields)
 		"  amount numeric(18, 2),"
 		"  data blob sub_type text"
 		")"};
-	createTable.execute(transaction);
+	(void) createTable.execute(transaction);
 	transaction.commit();
 
 	Transaction transaction2{attachment};
@@ -425,7 +425,7 @@ BOOST_AUTO_TEST_CASE(setNullParameter)
 
 	Statement select{attachment, transaction, "select cast(? as integer) from rdb$database"};
 	select.setNull(0);
-	select.execute(transaction);
+	(void) select.execute(transaction);
 	BOOST_REQUIRE(select.execute(transaction));
 	BOOST_CHECK(select.isNull(0));
 	BOOST_CHECK(!select.getInt32(0).has_value());
@@ -444,7 +444,7 @@ BOOST_AUTO_TEST_CASE(clearParametersToNull)
 	select.setInt32(0, 1);
 	select.setInt32(1, 2);
 	select.clearParameters();
-	select.execute(transaction);
+	(void) select.execute(transaction);
 	BOOST_REQUIRE(select.execute(transaction));
 	BOOST_CHECK(select.isNull(0));
 	BOOST_CHECK(select.isNull(1));
@@ -480,7 +480,7 @@ BOOST_AUTO_TEST_CASE(nullRoundTrip)
 	select.setString(1, std::nullopt);
 	select.setDouble(2, std::nullopt);
 	select.setDate(3, std::nullopt);
-	select.execute(transaction);
+	(void) select.execute(transaction);
 	BOOST_REQUIRE(select.execute(transaction));
 	BOOST_CHECK(!select.getInt32(0).has_value());
 	BOOST_CHECK(!select.getString(1).has_value());
@@ -1571,14 +1571,14 @@ BOOST_AUTO_TEST_CASE(fetchNextIteratesRows)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 5; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -1620,7 +1620,7 @@ BOOST_AUTO_TEST_CASE(cursorMethodsReturnFalseWithoutResultSet)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
@@ -1645,14 +1645,14 @@ BOOST_AUTO_TEST_CASE(cursorName)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 3; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{
@@ -1735,7 +1735,7 @@ BOOST_AUTO_TEST_CASE(setScaledBoostInt128ToNumeric38)
 
 	Statement insert{attachment, transaction, "select cast(? as numeric(38,4)) from rdb$database"};
 	insert.setScaledBoostInt128(0, testValue);
-	insert.execute(transaction);
+	(void) insert.execute(transaction);
 
 	auto result = insert.getScaledBoostInt128(0);
 	BOOST_REQUIRE(result.has_value());

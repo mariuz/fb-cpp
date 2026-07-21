@@ -39,7 +39,7 @@ static int countLimbo(Attachment& attachment)
 
 	Transaction transaction{attachment, options};
 	Statement statement{attachment, transaction, "select count(*) from rdb$transactions"};
-	statement.execute(transaction);
+	(void) statement.execute(transaction);
 	int count = statement.getInt32(0).value();
 	transaction.commit();
 	return count;
@@ -54,7 +54,7 @@ static int countRows(Attachment& attachment, const char* table)
 	std::string sql = "select count(*) from ";
 	sql += table;
 	Statement statement{attachment, transaction, sql};
-	statement.execute(transaction);
+	(void) statement.execute(transaction);
 	int count = statement.getInt32(0).value();
 	transaction.commit();
 	return count;
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(statementAcrossMultipleDatabases)
 	{  // scope
 		Transaction setupTx{attachment1};
 		Statement stmt1{attachment1, setupTx, "create table test_table (id integer)"};
-		stmt1.execute(setupTx);
+		(void) stmt1.execute(setupTx);
 		setupTx.commit();
 	}
 
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(statementAcrossMultipleDatabases)
 	{  // scope
 		Transaction setupTx{attachment2};
 		Statement stmt2{attachment2, setupTx, "create table test_table (id integer)"};
-		stmt2.execute(setupTx);
+		(void) stmt2.execute(setupTx);
 		setupTx.commit();
 	}
 
@@ -283,13 +283,13 @@ BOOST_AUTO_TEST_CASE(statementAcrossMultipleDatabases)
 	// Insert data in first database
 	{  // scope
 		Statement stmt1{attachment1, transaction, "insert into test_table (id) values (1)"};
-		stmt1.execute(transaction);
+		(void) stmt1.execute(transaction);
 	}
 
 	// Insert data in second database
 	{  // scope
 		Statement stmt2{attachment2, transaction, "insert into test_table (id) values (2)"};
-		stmt2.execute(transaction);
+		(void) stmt2.execute(transaction);
 	}
 
 	// Prepare and commit
@@ -344,14 +344,14 @@ BOOST_AUTO_TEST_CASE(prepareRollbackData)
 	{  // scope
 		Transaction setupTx1{attachment1};
 		Statement stmt1{attachment1, setupTx1, "create table test_table (id integer)"};
-		stmt1.execute(setupTx1);
+		(void) stmt1.execute(setupTx1);
 		setupTx1.commit();
 	}
 
 	{  // scope
 		Transaction setupTx2{attachment2};
 		Statement stmt2{attachment2, setupTx2, "create table test_table (id integer)"};
-		stmt2.execute(setupTx2);
+		(void) stmt2.execute(setupTx2);
 		setupTx2.commit();
 	}
 
@@ -362,12 +362,12 @@ BOOST_AUTO_TEST_CASE(prepareRollbackData)
 
 		{  // scope
 			Statement stmt1{attachment1, transaction, "insert into test_table (id) values (1)"};
-			stmt1.execute(transaction);
+			(void) stmt1.execute(transaction);
 		}
 
 		{  // scope
 			Statement stmt2{attachment2, transaction, "insert into test_table (id) values (2)"};
-			stmt2.execute(transaction);
+			(void) stmt2.execute(transaction);
 		}
 
 		BOOST_CHECK_EQUAL(countLimbo(attachment1), 0);

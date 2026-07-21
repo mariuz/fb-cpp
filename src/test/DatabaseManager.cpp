@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(restoreWithReplicaMode)
 			CLIENT, sourceDatabaseUri, AttachmentOptions().setCreateDatabase(true).setConnectionCharSet("UTF8")};
 		Transaction transaction{attachment};
 		Statement create{attachment, transaction, "create table test(id integer)"};
-		create.execute(transaction);
+		(void) create.execute(transaction);
 		transaction.commit();
 	}
 

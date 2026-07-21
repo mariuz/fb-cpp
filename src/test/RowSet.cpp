@@ -40,14 +40,14 @@ BOOST_AUTO_TEST_CASE(fetchRowsIntoRowSet)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 5; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -79,14 +79,14 @@ BOOST_AUTO_TEST_CASE(fetchFewerRowsThanMaxRows)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 3; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -110,14 +110,14 @@ BOOST_AUTO_TEST_CASE(rowSetIsDisconnectedFromStatement)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 3; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -147,14 +147,14 @@ BOOST_AUTO_TEST_CASE(moveConstructor)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 3; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -182,14 +182,14 @@ BOOST_AUTO_TEST_CASE(moveAssignment)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 5; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
@@ -223,14 +223,14 @@ BOOST_AUTO_TEST_CASE(fetchMultipleBatchesFromSameStatement)
 	Transaction transaction{attachment};
 
 	Statement ddl{attachment, transaction, "create table t (col integer)"};
-	ddl.execute(transaction);
+	(void) ddl.execute(transaction);
 	transaction.commitRetaining();
 
 	Statement insert{attachment, transaction, "insert into t (col) values (?)"};
 	for (int i = 1; i <= 10; ++i)
 	{
 		insert.setInt32(0, i);
-		insert.execute(transaction);
+		(void) insert.execute(transaction);
 	}
 
 	Statement select{attachment, transaction, "select col from t order by col"};
